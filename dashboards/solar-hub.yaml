@@ -1,0 +1,1424 @@
+title: Solar Command Hub
+theme: celestial
+views:
+  # ============================================================================
+  # VIEW 1: LIVE ENERGY OVERVIEW
+  # ============================================================================
+  - title: Live Flow
+    path: live
+    icon: mdi:lightning-bolt-circle
+    type: sections
+    max_columns: 3
+    background: transparent
+    badges:
+      - entity: binary_sensor.home_solar_energy_monitor_solar_daemon_service
+        name: Daemon
+        color: teal
+      - entity: sensor.home_solar_energy_monitor_solar_production
+        name: Solar
+        color: amber
+      - entity: sensor.home_solar_energy_monitor_house_consumption
+        name: House
+        color: blue
+      - entity: sensor.home_solar_energy_monitor_grid_net_power
+        name: Grid Net
+        color: purple
+      - entity: sensor.home_solar_energy_monitor_self_powered_ratio
+        name: Self-Powered
+        color: green
+      - entity: sensor.home_solar_energy_monitor_inverter_temperature
+        name: Inverter Temp
+    sections:
+      # HERO SUN BANNER
+      - type: grid
+        column_span: 3
+        cards:
+          - type: markdown
+            card_mod:
+              style:
+                ha-markdown:
+                  $: |
+                    ha-markdown-element {
+                      text-align: center !important;
+                    }
+                    h2 {
+                      text-align: center !important;
+                      font-size: 20px !important;
+                      font-weight: 800 !important;
+                      letter-spacing: -0.3px !important;
+                      margin: 0 !important;
+                      line-height: 1.3 !important;
+                      background: linear-gradient(90deg, #fff 30%, rgba(255,255,255,0.65));
+                      -webkit-background-clip: text;
+                      -webkit-text-fill-color: transparent;
+                      background-clip: text;
+                    }
+                    div {
+                      display: flex !important;
+                      flex-wrap: wrap !important;
+                      justify-content: center !important;
+                      align-items: center !important;
+                      gap: 6px !important;
+                      margin-top: 10px !important;
+                      width: 100% !important;
+                    }
+                    span {
+                      display: inline-flex !important;
+                      align-items: center !important;
+                      justify-content: center !important;
+                    }
+                .: |
+                  {% set elev = state_attr('sun.sun', 'elevation') | float(0) %}
+                  {% set azi = state_attr('sun.sun', 'azimuth') | float(180) %}
+                  {% if elev > 20 %}
+                    {% set bg = "linear-gradient(135deg, rgba(255,179,0,0.22) 0%, rgba(255,100,0,0.08) 40%, rgba(15,23,42,0.92) 100%)" %}
+                    {% set bdr = "rgba(255,179,0,0.35)" %}
+                    {% set glow = "0 8px 40px rgba(255,140,0,0.18), inset 0 1px 0 rgba(255,255,255,0.08)" %}
+                    {% set shimmer = "rgba(255,200,50,0.07)" %}
+                  {% elif elev > 5 and azi < 180 %}
+                    {% set bg = "linear-gradient(135deg, rgba(255,200,50,0.18) 0%, rgba(255,160,0,0.08) 40%, rgba(15,23,42,0.92) 100%)" %}
+                    {% set bdr = "rgba(255,200,50,0.30)" %}
+                    {% set glow = "0 8px 40px rgba(255,180,0,0.14), inset 0 1px 0 rgba(255,255,255,0.06)" %}
+                    {% set shimmer = "rgba(255,200,50,0.06)" %}
+                  {% elif elev > 5 %}
+                    {% set bg = "linear-gradient(135deg, rgba(255,120,0,0.20) 0%, rgba(200,50,100,0.08) 40%, rgba(15,23,42,0.92) 100%)" %}
+                    {% set bdr = "rgba(255,120,0,0.30)" %}
+                    {% set glow = "0 8px 40px rgba(255,100,0,0.14), inset 0 1px 0 rgba(255,255,255,0.06)" %}
+                    {% set shimmer = "rgba(255,150,50,0.06)" %}
+                  {% elif elev > -2 and azi < 180 %}
+                    {% set bg = "linear-gradient(135deg, rgba(255,130,50,0.20) 0%, rgba(180,80,160,0.12) 40%, rgba(15,23,42,0.94) 100%)" %}
+                    {% set bdr = "rgba(255,130,50,0.28)" %}
+                    {% set glow = "0 8px 40px rgba(255,100,50,0.12), inset 0 1px 0 rgba(255,255,255,0.05)" %}
+                    {% set shimmer = "rgba(255,140,80,0.05)" %}
+                  {% elif elev > -2 %}
+                    {% set bg = "linear-gradient(135deg, rgba(255,87,34,0.22) 0%, rgba(156,39,176,0.12) 40%, rgba(15,23,42,0.94) 100%)" %}
+                    {% set bdr = "rgba(255,87,34,0.30)" %}
+                    {% set glow = "0 8px 40px rgba(255,87,34,0.14), inset 0 1px 0 rgba(255,255,255,0.05)" %}
+                    {% set shimmer = "rgba(255,100,60,0.05)" %}
+                  {% elif elev > -6 %}
+                    {% set bg = "linear-gradient(135deg, rgba(100,50,150,0.22) 0%, rgba(50,30,100,0.12) 40%, rgba(12,18,38,0.96) 100%)" %}
+                    {% set bdr = "rgba(130,80,200,0.22)" %}
+                    {% set glow = "0 8px 40px rgba(100,50,150,0.10), inset 0 1px 0 rgba(255,255,255,0.04)" %}
+                    {% set shimmer = "rgba(120,80,200,0.04)" %}
+                  {% else %}
+                    {% set bg = "linear-gradient(135deg, rgba(30,40,80,0.5) 0%, rgba(15,20,50,0.6) 50%, rgba(10,12,30,0.97) 100%)" %}
+                    {% set bdr = "rgba(80,100,180,0.18)" %}
+                    {% set glow = "0 8px 40px rgba(30,50,120,0.08), inset 0 1px 0 rgba(255,255,255,0.03)" %}
+                    {% set shimmer = "rgba(60,80,180,0.03)" %}
+                  {% endif %}
+                  ha-card {
+                    text-align: center !important;
+                    background: {{ bg }} !important;
+                    border: 1px solid {{ bdr }} !important;
+                    border-radius: 20px !important;
+                    box-shadow: {{ glow }} !important;
+                    padding: 18px 22px 14px 22px !important;
+                    backdrop-filter: blur(20px) !important;
+                    -webkit-backdrop-filter: blur(20px) !important;
+                    position: relative !important;
+                    overflow: hidden !important;
+                    transition: all 0.6s ease !important;
+                  }
+                  ha-card::before {
+                    content: '';
+                    position: absolute;
+                    top: -80%;
+                    left: -80%;
+                    width: 260%;
+                    height: 260%;
+                    background: radial-gradient(ellipse, {{ shimmer }} 0%, transparent 55%);
+                    animation: hero-shimmer 6s ease-in-out infinite;
+                    pointer-events: none;
+                  }
+                  @keyframes hero-shimmer {
+                    0%, 100% { opacity: 0.4; transform: translate(0, 0) scale(1); }
+                    50% { opacity: 1; transform: translate(5%, 5%) scale(1.1); }
+                  }
+            content: >-
+              {% set solar = states('sensor.home_solar_energy_monitor_solar_production') | float(0) %}
+              {% set house = states('sensor.home_solar_energy_monitor_house_consumption') | float(0) %}
+              {% set elev = state_attr('sun.sun', 'elevation') | float(0) %}
+              {% set azi = state_attr('sun.sun', 'azimuth') | float(180) %}
+              {% set rising = azi < 180 %}
+              {% set next_set = state_attr('sun.sun', 'next_setting') %}
+              {% set next_rise = state_attr('sun.sun', 'next_rising') %}
+              {% set temp = state_attr('weather.forecast_home', 'temperature') | float(0) | round(0) %}
+              {% set clouds = state_attr('weather.forecast_home', 'cloud_coverage') | float(0) | round(0) %}
+              {% set weather_raw = states('weather.forecast_home') %}
+              {% set weather_txt = weather_raw | replace('-', ' ') | title if weather_raw not in ['unknown', 'unavailable'] else '' %}
+              {% if elev > 20 %}
+                {% set title = "☀️ FULL DAYLIGHT • PEAK SUN" %}
+              {% elif elev > 5 and rising %}
+                {% set title = "🌤️ MORNING GOLDEN HOUR" %}
+              {% elif elev > 5 %}
+                {% set title = "🌇 AFTERNOON GOLDEN HOUR" %}
+              {% elif elev > -2 and rising %}
+                {% set title = "🌅 SUNRISE • DAY DAWNING" %}
+              {% elif elev > -2 %}
+                {% set title = "🌆 SUNSET • FINAL LIGHT" %}
+              {% elif elev > -6 and rising %}
+                {% set title = "🌃 EARLY DAWN • FIRST LIGHT" %}
+              {% elif elev > -6 %}
+                {% set title = "🌆 LATE DUSK • TWILIGHT" %}
+              {% else %}
+                {% set title = "🌙 DEEP NIGHT • STARFIELD" %}
+              {% endif %}
+              {% set pill = 'display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.3px;' %}
+              {% set pill_bg = 'background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);' %}
+
+              ## {{ title }}
+
+              <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:10px;">
+              <span style="{{ pill }}{{ pill_bg }}">🌡️ {{ temp }}°F {{ weather_txt }}</span>
+              <span style="{{ pill }}{{ pill_bg }}">⚡ {{ solar | round(0) }} W{% if solar > 0 %} ({{ (solar / 78.4) | round(0) }}%){% endif %}</span>
+              <span style="{{ pill }}{{ pill_bg }}">☁️ {{ clouds }}%</span>
+              <span style="{{ pill }}{{ pill_bg }}">📐 {{ elev | round(1) }}°</span>
+              {% if elev > -2 and not rising %}
+              <span style="{{ pill }}{{ pill_bg }}">🌅 {{ as_timestamp(next_set) | timestamp_custom('%I:%M %p') if next_set else '—' }}</span>
+              {% elif elev <= -2 %}
+              <span style="{{ pill }}{{ pill_bg }}">🌄 {{ as_timestamp(next_rise) | timestamp_custom('%I:%M %p') if next_rise else '—' }}</span>
+              {% endif %}
+              <span style="{{ pill }}{{ pill_bg }}">🏠 {{ house | round(0) }} W</span>
+              </div>
+            grid_options:
+              columns: full
+
+      # POWER FLOW CARD
+      - type: grid
+        column_span: 2
+        cards:
+          - type: custom:power-flow-card-plus
+            title: Live Energy Distribution
+            entities:
+              solar:
+                entity: sensor.home_solar_energy_monitor_solar_production
+                name: Solar
+                icon: mdi:solar-power
+                color_icon: true
+                display_zero: true
+                secondary_info:
+                  entity: sensor.home_solar_energy_monitor_solar_produced_today
+                  unit_of_measurement: kWh
+              grid:
+                entity: sensor.home_solar_energy_monitor_grid_net_power
+                name: Grid
+                icon: mdi:transmission-tower
+                color_icon: true
+                display_zero: true
+                secondary_info:
+                  entity: sensor.home_solar_energy_monitor_net_energy_cost_today
+              home:
+                entity: sensor.home_solar_energy_monitor_house_consumption
+                name: House
+                icon: mdi:home-lightning-bolt
+                color_icon: true
+                secondary_info:
+                  entity: sensor.home_solar_energy_monitor_house_consumed_today
+                  unit_of_measurement: kWh
+                individual:
+                  - entity: sensor.home_solar_energy_monitor_circuit_hvac_nest_thermostat
+                    name: HVAC / AC (est)
+                    icon: mdi:hvac
+                    color_icon: true
+                  - entity: sensor.home_solar_energy_monitor_circuit_office
+                    name: Office
+                    icon: mdi:desktop-tower
+                    color_icon: true
+                  - entity: sensor.fridge_circuit_circuit_fridge
+                    name: Fridge
+                    icon: mdi:fridge-outline
+                    color_icon: true
+                  - entity: sensor.home_solar_energy_monitor_circuit_master_bed
+                    name: Master Bed
+                    icon: mdi:bed
+                    color_icon: true
+                  - entity: sensor.home_solar_energy_monitor_circuit_dedicated_freezer
+                    name: Freezer
+                    icon: mdi:snowflake
+                    color_icon: true
+            clickable_entities: true
+            display_zero_lines: true
+            use_new_flow_rate_model: true
+            w_decimals: 0
+            kw_decimals: 2
+            min_flow_rate: 0.9
+            max_flow_rate: 6
+
+      # INVERTER GAUGES
+      - type: grid
+        cards:
+          - type: heading
+            heading: Inverter Performance
+            icon: mdi:gauge
+          - type: grid
+            columns: 3
+            square: false
+            cards:
+              - type: gauge
+                entity: sensor.home_solar_energy_monitor_solar_production
+                name: Solar Watts
+                needle: true
+                min: 0
+                max: 7840
+                severity:
+                  green: 4500
+                  yellow: 2000
+                  red: 0
+              - type: gauge
+                entity: sensor.home_solar_energy_monitor_self_powered_ratio
+                name: Self-Powered
+                needle: true
+                min: 0
+                max: 100
+                severity:
+                  red: 0
+                  yellow: 40
+                  green: 75
+              - type: gauge
+                entity: sensor.home_solar_energy_monitor_inverter_temperature
+                name: Inverter Temp
+                needle: true
+                min: 60
+                max: 200
+                severity:
+                  green: 60
+                  yellow: 155
+                  red: 175
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_solar_dc_power
+                name: Solar DC Input
+                icon: mdi:solar-panel-large
+                color: orange
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_solar_lifetime_production
+                name: Lifetime Solar
+                icon: mdi:counter
+                color: deep-purple
+                vertical: false
+    footer:
+      card:
+        type: custom:dashboard-footer-card
+        background: "rgba(10, 15, 29, 0.96)"
+        blur: true
+        floating_mobile: true
+        floating_desktop: true
+        bottom_offset: "12px"
+        max_width: "620px"
+        icon_size: 24
+        font_size: 11
+        card_mod:
+          style: |
+            ha-card.footer-card {
+              background: rgba(10, 15, 29, 0.95) !important;
+              backdrop-filter: blur(24px) saturate(180%) !important;
+              -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+              border: 1px solid rgba(255, 255, 255, 0.18) !important;
+              box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 255, 255, 0.2) !important;
+              border-radius: 24px !important;
+            }
+            .route:not(.active) .route-icon-wrap ha-icon {
+              color: rgba(226, 232, 240, 0.75) !important;
+            }
+            .route:not(.active) .route-label {
+              color: rgba(203, 213, 225, 0.75) !important;
+              font-weight: 500 !important;
+            }
+            .route.active .route-label {
+              color: #ffffff !important;
+              font-weight: 700 !important;
+            }
+        routes:
+          - icon: mdi:lightning-bolt-circle
+            label: Live Flow
+            path: /solar-hub/live
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#38bdf8"
+          - icon: mdi:chart-timeline-variant
+            label: Circuits
+            path: /solar-hub/circuits
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#2dd4bf"
+            badge_content: "{{ states | selectattr('entity_id', 'match', 'sensor.home_solar_energy_monitor_circuit_') | rejectattr('state', 'in', ['unavailable', 'unknown']) | map(attribute='state') | map('float') | select('gt', 0) | list | count }}"
+            badge_color: "#0d9488"
+          - icon: mdi:chart-bell-curve-cumulative
+            label: Analytics
+            path: /solar-hub/analytics
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#f59e0b"
+          - icon: mdi:server-network
+            label: System
+            path: /solar-hub/system
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#c084fc"
+            badge_content: "{% set errs = states('sensor.home_solar_energy_monitor_daemon_error_count') | int(0) %}{% if errs > 0 %}{{ errs }}{% endif %}"
+            badge_color: "#ef4444"
+
+  # ============================================================================
+  # VIEW 2: ACTIVE CIRCUITS & BRANCH LOADS
+  # ============================================================================
+  - title: Circuits
+    path: circuits
+    icon: mdi:chart-timeline-variant
+    subview: true
+    type: sections
+    max_columns: 2
+    background: transparent
+    sections:
+      # ------------------------------------------------------------------------
+      # SECTION 1: GOOGLE NEST HVAC STATUS & LOAD ESTIMATOR
+      # ------------------------------------------------------------------------
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Google Nest HVAC Monitor & Dynamic Load Estimator
+            icon: mdi:thermostat
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: tile
+                entity: climate.master_bedroom_main_thermostat
+                name: Nest Thermostat
+                icon: mdi:thermostat
+                color: cyan
+                features:
+                  - type: climate-hvac-modes
+                    hvac_modes:
+                      - 'off'
+                      - cool
+                      - heat
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_circuit_hvac_nest_thermostat
+                name: HVAC Power Draw (est)
+                icon: mdi:hvac
+                color: cyan
+          - type: entities
+            title: ⚙️ Dynamic Base Load Tuning (Non-AC House Baseline)
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(15, 23, 42, 0.75) !important;
+                  backdrop-filter: blur(16px) !important;
+                  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+                  border-radius: 18px !important;
+                  padding-bottom: 4px !important;
+                }
+            entities:
+              - entity: number.home_solar_energy_monitor_hvac_cooling_estimated_power
+                name: Base Load Offset Slider (Watts)
+                icon: mdi:tune-vertical
+              - entity: script.calibrate_hvac_baseline
+                name: Auto-Calibrate from Current House Load (Tap when AC is Idle)
+                icon: mdi:target-variant
+                action_name: CALIBRATE
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(15, 23, 42, 0.75) !important;
+                  backdrop-filter: blur(16px) !important;
+                  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+                  border-radius: 18px !important;
+                  padding: 12px 16px !important;
+                }
+            content: >-
+              {% set action = state_attr('climate.master_bedroom_main_thermostat', 'hvac_action') | default('idle', true) %}
+              {% set cur_temp = state_attr('climate.master_bedroom_main_thermostat', 'current_temperature') %}
+              {% set target_temp = state_attr('climate.master_bedroom_main_thermostat', 'temperature') %}
+              {% set watts = states('sensor.home_solar_energy_monitor_circuit_hvac_nest_thermostat') | int(0) %}
+              {% set house = states('sensor.home_solar_energy_monitor_house_consumption') | int(0) %}
+              {% set baseline = states('number.home_solar_energy_monitor_hvac_cooling_estimated_power') | int(300) %}
+              {% if action == 'cooling' %}
+              ### ❄️ Central AC Running (Cooling)
+              **Inside:** {{ cur_temp }}°F &nbsp;•&nbsp; **Target:** {{ target_temp }}°F &nbsp;•&nbsp; **Dynamic HVAC Load (est):** **{{ watts }} W**  
+              *Calculated in real-time as House Load ({{ house }} W) − Base Load ({{ baseline }} W)*
+              {% elif action == 'heating' %}
+              ### 🔥 Heating System Active
+              **Inside:** {{ cur_temp }}°F &nbsp;•&nbsp; **Target:** {{ target_temp }}°F &nbsp;•&nbsp; **Dynamic HVAC Load (est):** **{{ watts }} W**  
+              *Calculated in real-time as House Load ({{ house }} W) − Base Load ({{ baseline }} W)*
+              {% elif action == 'fan' %}
+              ### 💨 Blower Fan Only
+              **Inside:** {{ cur_temp }}°F &nbsp;•&nbsp; **Target:** {{ target_temp }}°F &nbsp;•&nbsp; **Estimated Fan Load (est):** **{{ watts }} W**
+              {% else %}
+              ### 💤 HVAC Idle (Compressor Off)
+              **Inside:** {{ cur_temp }}°F &nbsp;•&nbsp; **Target:** {{ target_temp }}°F &nbsp;•&nbsp; **HVAC Draw (est):** **0 W**  
+              *Base house load currently running at ~{{ house }} W*
+              {% endif %}
+
+      # ------------------------------------------------------------------------
+      # SECTION 2: ACTIVE REAL-TIME CONSUMERS (> 0 W)
+      # ------------------------------------------------------------------------
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Active Real-Time Loads (> 0 W)
+            icon: mdi:lightning-bolt
+          - type: custom:auto-entities
+            card:
+              type: grid
+              columns: 2
+              square: false
+            card_param: cards
+            filter:
+              include:
+                - entity_id: sensor.home_solar_energy_monitor_circuit_*
+                  options:
+                    type: tile
+                    vertical: false
+                - entity_id: sensor.fridge_circuit_circuit_fridge
+                  options:
+                    type: tile
+                    name: Refrigerator
+                    icon: mdi:fridge-outline
+                    vertical: false
+              exclude:
+                - state: "<= 0"
+                - state: "unavailable"
+                - state: "unknown"
+            sort:
+              method: state
+              reverse: true
+              numeric: true
+
+      # ------------------------------------------------------------------------
+      # SECTION 3: COMPLETE SQUARE D BREAKER PANEL DIRECTORY (PHYSICAL MAP)
+      # ------------------------------------------------------------------------
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Square D QOC32UF Breaker Panel Map
+            icon: mdi:tune-vertical
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(15, 23, 42, 0.75) !important;
+                  backdrop-filter: blur(16px) !important;
+                  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+                  border-radius: 18px !important;
+                  padding: 12px 18px !important;
+                }
+            content: >-
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                <div>
+                  <span style="font-size:15px;font-weight:700;color:#f8fafc;letter-spacing:0.4px;">⚡ Square D QO Load Center (32-Space Panel)</span>
+                  <div style="font-size:12px;color:#94a3b8;margin-top:2px;">Digital twin mapping of physical breakers 1–22 • Secondary text shows door directory label</div>
+                </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <span style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;">8 Vue CT Clamps</span>
+                  <span style="background:rgba(6,182,212,0.15);color:#22d3ee;border:1px solid rgba(6,182,212,0.3);padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;">1 Nest Dynamic (est)</span>
+                  <span style="background:rgba(148,163,184,0.12);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;">14 Unmonitored (0 W)</span>
+                </div>
+              </div>
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              # LEFT COLUMN (ODD BREAKERS 1-21)
+              - type: entities
+                title: ⚡ Left Bus (Odd Breakers 1–21)
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(15, 23, 42, 0.70) !important;
+                      backdrop-filter: blur(16px) !important;
+                      border: 1px solid rgba(255, 255, 255, 0.10) !important;
+                      border-radius: 18px !important;
+                    }
+                entities:
+                  - entity: sensor.home_solar_energy_monitor_circuit_garage_plugs_door_lights
+                    name: "#1 (15A) Garage Plugs & Lights"
+                    secondary_info: "garage GFCI plugs, G.D.O, garage Lights"
+                    icon: mdi:garage
+                  - entity: sensor.home_solar_energy_monitor_circuit_dedicated_freezer
+                    name: "#3 (20A) Dedicated Freezer • Vue CT"
+                    secondary_info: "110 DEDICATED FREEZER ETC."
+                    icon: mdi:snowflake
+                  - entity: sensor.home_solar_energy_monitor_circuit_gas_furnace_igniter
+                    name: "#5 (15A) Gas Furnace & Igniter"
+                    secondary_info: "Furnace 110V Igniter"
+                    icon: mdi:fire
+                  - entity: sensor.home_solar_energy_monitor_circuit_dishwasher
+                    name: "#7 (15A) Dishwasher"
+                    secondary_info: "Dishwasher"
+                    icon: mdi:dishwasher
+                  - entity: sensor.home_solar_energy_monitor_circuit_garbage_disposal
+                    name: "#9 (15A) Garbage Disposal"
+                    secondary_info: "Disposal"
+                    icon: mdi:delete-empty
+                  - entity: sensor.fridge_circuit_circuit_fridge
+                    name: "#11 (20A) Refrigerator • Vue CT"
+                    secondary_info: "Refrigerator"
+                    icon: mdi:fridge-outline
+                  - entity: sensor.home_solar_energy_monitor_circuit_kitchen_island_nook_outlets
+                    name: "#13 (20A) Kitchen Nook & Island Plugs"
+                    secondary_info: "NOOK PLUGS ISLAND PLUGS LEFT FRIDGE COUNTER GFCI"
+                    icon: mdi:island
+                  - entity: sensor.home_solar_energy_monitor_circuit_washing_machine
+                    name: "#15 (20A) Washing Machine"
+                    secondary_info: "Washer"
+                    icon: mdi:washing-machine
+                  - entity: sensor.home_solar_energy_monitor_circuit_kitchen_vent_hood
+                    name: "#17 (15A) Kitchen Vent Hood"
+                    secondary_info: "VENT HOOD"
+                    icon: mdi:hvac
+                  - entity: sensor.home_solar_energy_monitor_circuit_microwave
+                    name: "#19 (20A) Microwave • Vue CT"
+                    secondary_info: "Microwave"
+                    icon: mdi:microwave
+                  - entity: sensor.home_solar_energy_monitor_circuit_dining_outlets_counter_gfci
+                    name: "#21 (20A) Dining Plugs & Counter GFCI"
+                    secondary_info: "Dining Plugs Fridge Counter GFCI, Right of sink GFCI"
+                    icon: mdi:countertop
+
+              # RIGHT COLUMN (EVEN BREAKERS 2-22)
+              - type: entities
+                title: ⚡ Right Bus (Even Breakers 2–22)
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(15, 23, 42, 0.70) !important;
+                      backdrop-filter: blur(16px) !important;
+                      border: 1px solid rgba(255, 255, 255, 0.10) !important;
+                      border-radius: 18px !important;
+                    }
+                entities:
+                  - entity: sensor.home_solar_energy_monitor_circuit_bathroom_gfci_outlets
+                    name: "#2 (20A) Bathroom GFCI Plugs"
+                    secondary_info: "BATH GFCI PLUGS"
+                    icon: mdi:power-socket-us
+                  - entity: sensor.home_solar_energy_monitor_circuit_exterior_patio_outlets
+                    name: "#4 (15A) Exterior & Patio Outlets"
+                    secondary_info: "EXTERIOR W/P GFCI FRONT PORCH PLUG PATIO PLUG"
+                    icon: mdi:patio-heater
+                  - entity: sensor.home_solar_energy_monitor_circuit_family_room_outlets_patio_light
+                    name: "#6 (15A) Family Plugs & Patio Light"
+                    secondary_info: "Family Plugs Back Patio light, Nook light."
+                    icon: mdi:sofa
+                  - entity: sensor.home_solar_energy_monitor_circuit_office
+                    name: "#8 (15A) Study / Office • Vue CT"
+                    secondary_info: "STUDY ROOM"
+                    icon: mdi:desktop-tower
+                  - entity: sensor.home_solar_energy_monitor_circuit_master_bath_closet
+                    name: "#10 (15A) Master Bath & Closet • Vue CT"
+                    secondary_info: "MASTER BATH MASTER CLOSET MASTER HALL LIGHT"
+                    icon: mdi:shower
+                  - entity: sensor.home_solar_energy_monitor_circuit_master_bed
+                    name: "#12 (15A) Master Bedroom • Vue CT"
+                    secondary_info: "MASTER BEDROOM"
+                    icon: mdi:bed
+                  - entity: sensor.home_solar_energy_monitor_circuit_bed_bathroom_3
+                    name: "#14 (15A) Bed #2 & Hall Bath #2 • Vue CT"
+                    secondary_info: "FRONT BED #2 HALL BATH #2"
+                    icon: mdi:door-open
+                  - entity: sensor.home_solar_energy_monitor_circuit_dining_family_kitchen_lights
+                    name: "#16 (15A) Dining, Family & Kitchen Lights"
+                    secondary_info: "Dining, Family, kitchen Lights"
+                    icon: mdi:ceiling-light-multiple
+                  - entity: sensor.home_solar_energy_monitor_circuit_middle_bed_3_utility_roo
+                    name: "#18 (15A) Middle Bed #3 & Utility • Vue CT"
+                    secondary_info: "MIDDLE BED #3 utility room"
+                    icon: mdi:washing-machine
+                  - entity: sensor.home_solar_energy_monitor_circuit_hallway_lights_bedroom_3
+                    name: "#20 (15A) Hallway Lights & Bed #3"
+                    secondary_info: "garage hall light BED #3 HALL LIGHT BED #2 HALL ROOM #3"
+                    icon: mdi:lightbulb-group
+                  - entity: sensor.home_solar_energy_monitor_circuit_foyer_lights_outlets
+                    name: "#22 (15A) Foyer Lights & Outlets"
+                    secondary_info: "Foyer Lights Foyer Plugs"
+                    icon: mdi:door
+    footer:
+      card:
+        type: custom:dashboard-footer-card
+        background: "rgba(10, 15, 29, 0.96)"
+        blur: true
+        floating_mobile: true
+        floating_desktop: true
+        bottom_offset: "12px"
+        max_width: "620px"
+        icon_size: 24
+        font_size: 11
+        card_mod:
+          style: |
+            ha-card.footer-card {
+              background: rgba(10, 15, 29, 0.95) !important;
+              backdrop-filter: blur(24px) saturate(180%) !important;
+              -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+              border: 1px solid rgba(255, 255, 255, 0.18) !important;
+              box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 255, 255, 0.2) !important;
+              border-radius: 24px !important;
+            }
+            .route:not(.active) .route-icon-wrap ha-icon {
+              color: rgba(226, 232, 240, 0.75) !important;
+            }
+            .route:not(.active) .route-label {
+              color: rgba(203, 213, 225, 0.75) !important;
+              font-weight: 500 !important;
+            }
+            .route.active .route-label {
+              color: #ffffff !important;
+              font-weight: 700 !important;
+            }
+        routes:
+          - icon: mdi:lightning-bolt-circle
+            label: Live Flow
+            path: /solar-hub/live
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#38bdf8"
+          - icon: mdi:chart-timeline-variant
+            label: Circuits
+            path: /solar-hub/circuits
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#2dd4bf"
+            badge_content: "{{ states | selectattr('entity_id', 'match', 'sensor.home_solar_energy_monitor_circuit_') | rejectattr('state', 'in', ['unavailable', 'unknown']) | map(attribute='state') | map('float') | select('gt', 0) | list | count }}"
+            badge_color: "#0d9488"
+          - icon: mdi:chart-bell-curve-cumulative
+            label: Analytics
+            path: /solar-hub/analytics
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#f59e0b"
+          - icon: mdi:server-network
+            label: System
+            path: /solar-hub/system
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#c084fc"
+            badge_content: "{% set errs = states('sensor.home_solar_energy_monitor_daemon_error_count') | int(0) %}{% if errs > 0 %}{{ errs }}{% endif %}"
+            badge_color: "#ef4444"
+
+  # ============================================================================
+  # VIEW 3: 24-HOUR ANALYTICS & FINANCIAL BALANCE
+  # ============================================================================
+  - title: Analytics
+    path: analytics
+    icon: mdi:chart-bell-curve-cumulative
+    subview: true
+    type: sections
+    max_columns: 2
+    background: transparent
+    sections:
+      # ------------------------------------------------------------------------
+      # SECTION 1: LIVE POWER ROUTING & SANKEY DISTRIBUTION
+      # ------------------------------------------------------------------------
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Live Power Routing & Flow Distribution
+            icon: mdi:sitemap
+          - type: custom:sankey-chart
+            title: Real-Time Wattage Flow
+            show_names: true
+            round: 0
+            unit_prefix: ' '
+            height: 230
+            nodes:
+              - id: sensor.home_solar_energy_monitor_solar_production
+                name: Solar Generation
+                color: '#ffb300'
+                section: 0
+              - id: grid_import
+                entity_id: sensor.home_solar_energy_monitor_grid_net_power
+                name: Grid Import
+                color: '#ef4444'
+                section: 0
+              - id: sensor.home_solar_energy_monitor_house_consumption
+                name: House Load
+                color: '#00e5ff'
+                section: 1
+                children_sum:
+                  should_be: equal_or_less
+                  reconcile_to: max
+              - id: grid_export
+                entity_id: sensor.home_solar_energy_monitor_grid_net_power
+                name: Grid Export
+                color: '#10b981'
+                filters:
+                  - multiply: -1
+                section: 1
+              - id: sensor.home_solar_energy_monitor_circuit_hvac_nest_thermostat
+                name: HVAC / AC (est)
+                color: '#06b6d4'
+                section: 2
+              - id: sensor.home_solar_energy_monitor_circuit_office
+                name: Office
+                color: '#38bdf8'
+                section: 2
+              - id: sensor.fridge_circuit_circuit_fridge
+                name: Refrigerator
+                color: '#34d399'
+                section: 2
+              - id: sensor.home_solar_energy_monitor_circuit_master_bed
+                name: Master Bed
+                color: '#fbbf24'
+                section: 2
+              - id: house_other
+                name: Other Circuits
+                type: remaining_parent_state
+                color: '#94a3b8'
+                section: 2
+            links:
+              - source: sensor.home_solar_energy_monitor_solar_production
+                target: sensor.home_solar_energy_monitor_house_consumption
+              - source: sensor.home_solar_energy_monitor_solar_production
+                target: grid_export
+              - source: grid_import
+                target: sensor.home_solar_energy_monitor_house_consumption
+              - source: sensor.home_solar_energy_monitor_house_consumption
+                target: sensor.home_solar_energy_monitor_circuit_hvac_nest_thermostat
+              - source: sensor.home_solar_energy_monitor_house_consumption
+                target: sensor.home_solar_energy_monitor_circuit_office
+              - source: sensor.home_solar_energy_monitor_house_consumption
+                target: sensor.fridge_circuit_circuit_fridge
+              - source: sensor.home_solar_energy_monitor_house_consumption
+                target: sensor.home_solar_energy_monitor_circuit_master_bed
+              - source: sensor.home_solar_energy_monitor_house_consumption
+                target: house_other
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(15, 23, 42, 0.75) !important;
+                  backdrop-filter: blur(16px) !important;
+                  -webkit-backdrop-filter: blur(16px) !important;
+                  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+                  border-radius: 18px !important;
+                  padding: 12px !important;
+                }
+
+      # ------------------------------------------------------------------------
+      # SECTION 2: 24-HOUR ENERGY PROFILE
+      # ------------------------------------------------------------------------
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: 24-Hour Energy Timeline
+            icon: mdi:chart-timeline-variant-shimmer
+          - type: custom:apexcharts-card
+            header:
+              show: true
+              title: 24-Hour Power Profile
+              show_states: true
+              colorize_states: true
+            graph_span: 24h
+            span:
+              end: minute
+            all_series_config:
+              stroke_width: 2.5
+              opacity: 0.25
+              type: area
+            apex_config:
+              chart:
+                height: 310px
+                zoom:
+                  enabled: true
+                toolbar:
+                  show: false
+              grid:
+                borderColor: rgba(255, 255, 255, 0.06)
+              legend:
+                show: true
+                position: top
+                horizontalAlign: right
+              stroke:
+                show: true
+                curve: smooth
+                width:
+                  - 2.5
+                  - 2.5
+                  - 1.5
+              fill:
+                type: gradient
+                gradient:
+                  shadeIntensity: 1
+                  opacityFrom: 0.35
+                  opacityTo: 0.02
+                  stops: [0, 90, 100]
+            series:
+              - entity: sensor.home_solar_energy_monitor_solar_production
+                name: Solar Generation
+                color: '#ffb300'
+                type: area
+                fill_raw: last
+              - entity: sensor.home_solar_energy_monitor_house_consumption
+                name: House Consumed
+                color: '#00e5ff'
+                type: line
+                fill_raw: last
+              - entity: sensor.home_solar_energy_monitor_grid_net_power
+                name: Grid Net (+Import / -Export)
+                color: '#e040fb'
+                type: line
+                stroke_width: 1.5
+                fill_raw: last
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(15, 23, 42, 0.75) !important;
+                  backdrop-filter: blur(16px) !important;
+                  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+                  border-radius: 18px !important;
+                }
+
+      # ------------------------------------------------------------------------
+      # SECTION 3: INVERTER THERMAL DYNAMICS (COLUMN 1)
+      # ------------------------------------------------------------------------
+      - type: grid
+        cards:
+          - type: heading
+            heading: Inverter Thermal Load
+            icon: mdi:thermometer-alert
+          - type: custom:apexcharts-card
+            experimental:
+              disable_config_validation: true
+            header:
+              show: true
+              title: Heat Dissipation vs Solar Output (24h)
+              show_states: true
+              colorize_states: true
+            graph_span: 24h
+            span:
+              end: minute
+            apex_config:
+              chart:
+                height: 280px
+                toolbar:
+                  show: false
+              grid:
+                borderColor: rgba(255, 255, 255, 0.06)
+              legend:
+                show: true
+                position: top
+                horizontalAlign: right
+              stroke:
+                curve: smooth
+                width: [2.5, 2]
+            yaxis:
+              - id: power
+                min: 0
+                decimals: 0
+                apex_config:
+                  title:
+                    text: Solar (W)
+                  labels:
+                    style:
+                      colors: '#f59e0b'
+              - id: temp
+                opposite: true
+                decimals: 0
+                apex_config:
+                  title:
+                    text: Temp (°F)
+                  labels:
+                    style:
+                      colors: '#f43f5e'
+            series:
+              - entity: sensor.home_solar_energy_monitor_solar_production
+                name: Solar AC
+                yaxis_id: power
+                color: '#f59e0b'
+                type: area
+                opacity: 0.25
+                stroke_width: 2.5
+                fill_raw: last
+                group_by:
+                  func: avg
+                  duration: 5m
+              - entity: sensor.home_solar_energy_monitor_inverter_temperature
+                name: Inverter Temp
+                yaxis_id: temp
+                color: '#f43f5e'
+                type: line
+                stroke_width: 2
+                fill_raw: last
+                group_by:
+                  func: avg
+                  duration: 5m
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(15, 23, 42, 0.75) !important;
+                  backdrop-filter: blur(16px) !important;
+                  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+                  border-radius: 18px !important;
+                }
+
+      # ------------------------------------------------------------------------
+      # SECTION 4: ACTIVE CIRCUITS BREAKDOWN (COLUMN 2)
+      # ------------------------------------------------------------------------
+      - type: grid
+        cards:
+          - type: heading
+            heading: Active Circuits Breakdown
+            icon: mdi:chart-donut
+          - type: custom:apexcharts-card
+            header:
+              show: true
+              title: Monitored Circuit Share
+              show_states: false
+            chart_type: donut
+            apex_config:
+              chart:
+                height: 280px
+              legend:
+                show: true
+                position: right
+                fontSize: 12px
+                labels:
+                  colors: '#cbd5e1'
+              plotOptions:
+                pie:
+                  donut:
+                    size: '65%'
+                    labels:
+                      show: true
+                      total:
+                        show: true
+                        label: 'Monitored'
+                        fontSize: '11px'
+                        color: '#94a3b8'
+                        formatter: |
+                          EVAL:function (w) {
+                            const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                            return sum.toFixed(0) + ' W';
+                          }
+            series:
+              - entity: sensor.home_solar_energy_monitor_circuit_hvac_nest_thermostat
+                name: HVAC / AC (est)
+                color: '#06b6d4'
+              - entity: sensor.home_solar_energy_monitor_circuit_office
+                name: Office
+                color: '#38bdf8'
+              - entity: sensor.fridge_circuit_circuit_fridge
+                name: Fridge
+                color: '#2dd4bf'
+              - entity: sensor.home_solar_energy_monitor_circuit_master_bed
+                name: Master Bed
+                color: '#f59e0b'
+              - entity: sensor.home_solar_energy_monitor_circuit_dedicated_freezer
+                name: Freezer
+                color: '#a855f7'
+              - entity: sensor.home_solar_energy_monitor_circuit_microwave
+                name: Microwave
+                color: '#ec4899'
+              - entity: sensor.home_solar_energy_monitor_circuit_bed_bathroom_3
+                name: Bed / Bath 3
+                color: '#6366f1'
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(15, 23, 42, 0.75) !important;
+                  backdrop-filter: blur(16px) !important;
+                  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+                  border-radius: 18px !important;
+                }
+
+      # ------------------------------------------------------------------------
+      # SECTION 5: DAILY TOTALS & FINANCIAL BALANCE
+      # ------------------------------------------------------------------------
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Daily Totals & Financial Balance
+            icon: mdi:cash-multiple
+          - type: grid
+            columns: 3
+            square: false
+            cards:
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_net_energy_cost_today
+                name: Net Energy Cost
+                icon: mdi:cash-check
+                color: green
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_solar_produced_today
+                name: Solar Produced
+                icon: mdi:solar-power-variant
+                color: amber
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_house_consumed_today
+                name: House Consumed
+                icon: mdi:home-lightning-bolt
+                color: blue
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_grid_export_credit_today
+                name: Export Credit
+                icon: mdi:bank-transfer-in
+                color: teal
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_grid_exported_today
+                name: Grid Exported
+                icon: mdi:transmission-tower-export
+                color: teal
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_grid_imported_today
+                name: Grid Imported
+                icon: mdi:transmission-tower-import
+                color: red
+                vertical: false
+
+      # ------------------------------------------------------------------------
+      # SECTION 6: SYSTEM INDEPENDENCE & LIFETIME IMPACT
+      # ------------------------------------------------------------------------
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Independence & Lifetime Environmental Impact
+            icon: mdi:earth
+          - type: grid
+            columns: 3
+            square: false
+            cards:
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_self_powered_ratio
+                name: Self-Powered Ratio
+                icon: mdi:shield-sun
+                color: green
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_solar_lifetime_production
+                name: Lifetime Solar Output
+                icon: mdi:counter
+                color: deep-purple
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_solar_dc_power
+                name: Solar DC Array Input
+                icon: mdi:solar-panel-large
+                color: orange
+                vertical: false
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(15, 23, 42, 0.75) !important;
+                  backdrop-filter: blur(16px) !important;
+                  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+                  border-radius: 18px !important;
+                  padding: 14px 18px !important;
+                }
+            content: >-
+              {% set lifetime = states('sensor.home_solar_energy_monitor_solar_lifetime_production') | float(0) %}
+              {% set co2_tons = (lifetime * 0.000707) | round(1) %}
+              {% set trees = (lifetime * 0.0117) | round(0) | int %}
+              {% set est_savings = (lifetime * 0.14) | round(0) | int %}
+
+              | Metric | Impact | Description |
+              | :--- | :--- | :--- |
+              | 🌱 **CO₂ Avoided** | **{{ co2_tons }} metric tons** | Greenhouse gas emissions offset |
+              | 🌲 **Trees Equivalent** | **{{ trees }} seedlings** | Carbon sequestered over 10 years |
+              | ⚡ **Total Clean Energy** | **{{ (lifetime / 1000) | round(1) }} MWh** | Cumulative solar generation |
+              | 💵 **Estimated Solar Savings** | **~${{ est_savings }} USD** | Cumulative utility bill offset |
+    footer:
+      card:
+        type: custom:dashboard-footer-card
+        background: "rgba(10, 15, 29, 0.96)"
+        blur: true
+        floating_mobile: true
+        floating_desktop: true
+        bottom_offset: "12px"
+        max_width: "620px"
+        icon_size: 24
+        font_size: 11
+        card_mod:
+          style: |
+            ha-card.footer-card {
+              background: rgba(10, 15, 29, 0.95) !important;
+              backdrop-filter: blur(24px) saturate(180%) !important;
+              -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+              border: 1px solid rgba(255, 255, 255, 0.18) !important;
+              box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 255, 255, 0.2) !important;
+              border-radius: 24px !important;
+            }
+            .route:not(.active) .route-icon-wrap ha-icon {
+              color: rgba(226, 232, 240, 0.75) !important;
+            }
+            .route:not(.active) .route-label {
+              color: rgba(203, 213, 225, 0.75) !important;
+              font-weight: 500 !important;
+            }
+            .route.active .route-label {
+              color: #ffffff !important;
+              font-weight: 700 !important;
+            }
+        routes:
+          - icon: mdi:lightning-bolt-circle
+            label: Live Flow
+            path: /solar-hub/live
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#38bdf8"
+          - icon: mdi:chart-timeline-variant
+            label: Circuits
+            path: /solar-hub/circuits
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#2dd4bf"
+            badge_content: "{{ states | selectattr('entity_id', 'match', 'sensor.home_solar_energy_monitor_circuit_') | rejectattr('state', 'in', ['unavailable', 'unknown']) | map(attribute='state') | map('float') | select('gt', 0) | list | count }}"
+            badge_color: "#0d9488"
+          - icon: mdi:chart-bell-curve-cumulative
+            label: Analytics
+            path: /solar-hub/analytics
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#f59e0b"
+          - icon: mdi:server-network
+            label: System
+            path: /solar-hub/system
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#c084fc"
+            badge_content: "{% set errs = states('sensor.home_solar_energy_monitor_daemon_error_count') | int(0) %}{% if errs > 0 %}{{ errs }}{% endif %}"
+            badge_color: "#ef4444"
+
+  # ============================================================================
+  # VIEW 4: SYSTEM TELEMETRY & DIAGNOSTICS
+  # ============================================================================
+  - title: System
+    path: system
+    icon: mdi:server-network
+    subview: true
+    type: sections
+    max_columns: 2
+    background: transparent
+    sections:
+      # ------------------------------------------------------------------------
+      # SECTION 1: SOLAR PIPELINE & DAEMON HEALTH
+      # ------------------------------------------------------------------------
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Solar Pipeline & Daemon Health
+            icon: mdi:server
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: tile
+                entity: binary_sensor.home_solar_energy_monitor_solar_daemon_service
+                name: Solar Daemon Service
+                icon: mdi:server
+                color: teal
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_daemon_uptime
+                name: Pipeline Uptime
+                icon: mdi:clock-check-outline
+                color: cyan
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_daemon_memory_usage
+                name: Daemon Memory
+                icon: mdi:memory
+                color: light-blue
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_daemon_error_count
+                name: Pipeline Error Count
+                icon: mdi:shield-alert-outline
+                color: red
+                vertical: false
+
+      # ------------------------------------------------------------------------
+      # SECTION 2: HYPER-V VM HOST & SYSTEM RESOURCE DIAGNOSTICS
+      # ------------------------------------------------------------------------
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Hyper-V VM Host & Resource Diagnostics
+            icon: mdi:monitor-dashboard
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: tile
+                entity: sensor.system_monitor_load_1_min
+                name: CPU Load Average (1m)
+                icon: mdi:cpu-64-bit
+                color: cyan
+                vertical: false
+              - type: tile
+                entity: sensor.system_monitor_memory_usage
+                name: Host RAM Usage
+                icon: mdi:memory
+                color: purple
+                vertical: false
+              - type: tile
+                entity: sensor.system_monitor_disk_usage
+                name: Virtual Disk Used (.vhdx)
+                icon: mdi:harddisk
+                color: amber
+                vertical: false
+              - type: tile
+                entity: sensor.system_monitor_io_pressure_some_10s_average
+                name: Disk I/O Pressure (Watchdog)
+                icon: mdi:speedometer
+                color: green
+                vertical: false
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(15, 23, 42, 0.75) !important;
+                  backdrop-filter: blur(16px) !important;
+                  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                  border-radius: 16px !important;
+                  padding: 12px 18px !important;
+                }
+            content: >-
+              {% set ram_used = states('sensor.system_monitor_memory_use') %}
+              {% set ram_pct = states('sensor.system_monitor_memory_usage') %}
+              {% set disk_free = states('sensor.system_monitor_disk_free') %}
+              {% set disk_pct = states('sensor.system_monitor_disk_usage') %}
+              {% set io_press = states('sensor.system_monitor_io_pressure_some_10s_average') %}
+              {% set load = states('sensor.system_monitor_load_1_min') %}
+              {% set pill = 'display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;' %}
+              {% set pill_dark = 'background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.1);' %}
+              {% set pill_green = 'background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.25);' %}
+
+              | Diagnostic Metric | Live Value | Status |
+              | :--- | :--- | :--- |
+              | 🚀 **Virtualization Engine** | **Microsoft Hyper-V (Gen 2 UEFI)** | <span style="{{ pill }}{{ pill_green }}">Native VT-x/AMD-V</span> |
+              | 🧠 **Memory Allocation** | **{{ ram_used }} ({{ ram_pct }}%)** | <span style="{{ pill }}{{ pill_green }}">Plentiful Overhead</span> |
+              | 💽 **Storage Space Free** | **{{ disk_free }} ({{ disk_pct }}% used)** | <span style="{{ pill }}{{ pill_dark }}">Dynamic VHDX</span> |
+              | ⏱️ **Watchdog I/O Latency** | **{{ io_press }}%** | <span style="{{ pill }}{{ pill_green }}">Zero Disk Stalls</span> |
+
+      # ------------------------------------------------------------------------
+      # SECTION 3: SOLAREDGE INVERTER HARDWARE TELEMETRY
+      # ------------------------------------------------------------------------
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: SolarEdge Inverter Hardware Diagnostics
+            icon: mdi:solar-power-variant
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_inverter_temperature
+                name: Inverter Heatsink Temp
+                icon: mdi:thermometer-high
+                color: orange
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_solar_dc_power
+                name: Solar DC Array Input
+                icon: mdi:solar-panel-large
+                color: amber
+                vertical: false
+
+      # ------------------------------------------------------------------------
+      # SECTION 4: ERROR LOGS & DIAGNOSTICS
+      # ------------------------------------------------------------------------
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Subsystem Error Logs & History
+            icon: mdi:clipboard-text-clock
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(15, 23, 42, 0.85) !important;
+                  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                  border-radius: 16px !important;
+                  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+                }
+            content: >-
+              {% set err_count = states('sensor.home_solar_energy_monitor_daemon_error_count') | int(0) %}
+              {% set log_entries = state_attr('sensor.home_solar_energy_monitor_daemon_error_log', 'errors') %}
+              {% if err_count == 0 or not log_entries %}
+                <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 10px; background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.25);">
+                  <ha-icon icon="mdi:check-decagram" style="color: #22c55e; --mdc-icon-size: 28px;"></ha-icon>
+                  <div>
+                    <div style="font-weight: 700; color: #22c55e; font-size: 14px;">All Pipeline Systems Healthy</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px;">SolarEdge Modbus TCP & Emporia Vue polling normally. 0 errors logged.</div>
+                  </div>
+                </div>
+              {% else %}
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-bottom: 12px; border-radius: 10px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3);">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <ha-icon icon="mdi:alert-circle" style="color: #ef4444; --mdc-icon-size: 24px;"></ha-icon>
+                    <span style="font-weight: 700; color: #f87171; font-size: 14px;">{{ err_count }} Recent Error(s) Encountered</span>
+                  </div>
+                  <span style="font-size: 11px; color: rgba(255,255,255,0.5);">Latest: {{ state_attr('sensor.home_solar_energy_monitor_daemon_error_log', 'last_check') }}</span>
+                </div>
+
+                | Time | Subsystem | Error Details |
+                | :--- | :--- | :--- |
+                {% for err in log_entries %}
+                | `{{ err.time }}` | **{{ err.source }}** | {{ err.message }} |
+                {% endfor %}
+              {% endif %}
+    footer:
+      card:
+        type: custom:dashboard-footer-card
+        background: "rgba(10, 15, 29, 0.96)"
+        blur: true
+        floating_mobile: true
+        floating_desktop: true
+        bottom_offset: "12px"
+        max_width: "620px"
+        icon_size: 24
+        font_size: 11
+        card_mod:
+          style: |
+            ha-card.footer-card {
+              background: rgba(10, 15, 29, 0.95) !important;
+              backdrop-filter: blur(24px) saturate(180%) !important;
+              -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+              border: 1px solid rgba(255, 255, 255, 0.18) !important;
+              box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 255, 255, 0.2) !important;
+              border-radius: 24px !important;
+            }
+            .route:not(.active) .route-icon-wrap ha-icon {
+              color: rgba(226, 232, 240, 0.75) !important;
+            }
+            .route:not(.active) .route-label {
+              color: rgba(203, 213, 225, 0.75) !important;
+              font-weight: 500 !important;
+            }
+            .route.active .route-label {
+              color: #ffffff !important;
+              font-weight: 700 !important;
+            }
+        routes:
+          - icon: mdi:lightning-bolt-circle
+            label: Live Flow
+            path: /solar-hub/live
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#38bdf8"
+          - icon: mdi:chart-timeline-variant
+            label: Circuits
+            path: /solar-hub/circuits
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#2dd4bf"
+            badge_content: "{{ states | selectattr('entity_id', 'match', 'sensor.home_solar_energy_monitor_circuit_') | rejectattr('state', 'in', ['unavailable', 'unknown']) | map(attribute='state') | map('float') | select('gt', 0) | list | count }}"
+            badge_color: "#0d9488"
+          - icon: mdi:chart-bell-curve-cumulative
+            label: Analytics
+            path: /solar-hub/analytics
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#f59e0b"
+          - icon: mdi:server-network
+            label: System
+            path: /solar-hub/system
+            icon_color: "rgba(226, 232, 240, 0.75)"
+            active_color: "#c084fc"
+            badge_content: "{% set errs = states('sensor.home_solar_energy_monitor_daemon_error_count') | int(0) %}{% if errs > 0 %}{{ errs }}{% endif %}"
+            badge_color: "#ef4444"

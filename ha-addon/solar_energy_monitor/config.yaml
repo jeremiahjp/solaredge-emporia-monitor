@@ -1,0 +1,35 @@
+name: "Solar & Energy Monitor"
+description: "Unified SolarEdge Modbus TCP & Emporia Vue Live Energy Monitor"
+version: "1.0.0"
+slug: "solar_energy_monitor"
+init: false
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+startup: application
+boot: auto
+options:
+  inverter_ip: "192.168.1.100"
+  modbus_port: 502
+  poll_interval_ms: 2000
+  emporia_user: ""
+  emporia_pass: ""
+  import_rate_kwh: 0.14
+  export_rate_kwh: 0.01
+  mqtt_broker: "mqtt://core-mosquitto:1883"
+  mqtt_user: "solar"
+  mqtt_pass: ""
+schema:
+  inverter_ip: str
+  modbus_port: int
+  poll_interval_ms: int
+  emporia_user: str
+  emporia_pass: password
+  import_rate_kwh: float
+  export_rate_kwh: float
+  mqtt_broker: str
+  mqtt_user: str
+  mqtt_pass: password

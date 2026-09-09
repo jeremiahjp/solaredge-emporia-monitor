@@ -1,0 +1,400 @@
+# ==============================================================================
+# Home Assistant Lights & Lighting Dashboard — Premium Edition
+# Requires HACS: card-mod
+# Organized by room with glassmorphism cards, warm ambient background,
+# hero header, and conditional glow effects when lights are on.
+# ==============================================================================
+
+title: Lights & Lighting
+views:
+  - title: Lighting Control
+    path: lights
+    icon: mdi:lightbulb-group
+    type: sections
+    max_columns: 3
+
+    # ── View Background ──────────────────────────────────────────────────
+    # Warm dark gradient with subtle amber and violet accent glows
+    background: >-
+      radial-gradient(ellipse at 25% 0%, rgba(251,191,36,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 75% 100%, rgba(168,85,247,0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(245,158,11,0.03) 0%, transparent 60%),
+      linear-gradient(180deg, #09090f 0%, #0f0f18 30%, #0c0c14 70%, #060610 100%) fixed
+
+    # ── View-Level card_mod ──────────────────────────────────────────────
+    card_mod:
+      style: |
+        hui-sections-view {
+          --ha-card-background: rgba(255,255,255,0.03);
+          --ha-card-border-color: rgba(255,255,255,0.06);
+          --ha-card-border-radius: 16px;
+        }
+
+    sections:
+      # ════════════════════════════════════════════════════════════════════
+      # HERO HEADER
+      # ════════════════════════════════════════════════════════════════════
+      - type: grid
+        cards:
+          - type: markdown
+            content: >-
+              <div style="text-align:center; padding: 24px 16px 16px;">
+                <div style="
+                  font-size: 52px;
+                  line-height: 1;
+                  margin-bottom: 10px;
+                  filter: drop-shadow(0 0 18px rgba(251,191,36,0.5));
+                ">💡</div>
+                <div style="
+                  font-size: 26px;
+                  font-weight: 800;
+                  letter-spacing: 0.5px;
+                  background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d);
+                  -webkit-background-clip: text;
+                  -webkit-text-fill-color: transparent;
+                  margin-bottom: 6px;
+                ">Lighting Control</div>
+                <div style="
+                  font-size: 13px;
+                  color: rgba(255,255,255,0.4);
+                  letter-spacing: 1.5px;
+                  text-transform: uppercase;
+                  font-weight: 500;
+                ">Master Suite · Bedroom · Office</div>
+              </div>
+            card_mod:
+              style: |
+                ha-card {
+                  background: linear-gradient(
+                    135deg,
+                    rgba(251,191,36,0.08) 0%,
+                    rgba(245,158,11,0.04) 40%,
+                    rgba(255,255,255,0.02) 100%
+                  ) !important;
+                  border: 1px solid rgba(251,191,36,0.12) !important;
+                  border-radius: 20px !important;
+                  backdrop-filter: blur(24px) !important;
+                  box-shadow:
+                    0 8px 32px rgba(0,0,0,0.3),
+                    inset 0 1px 0 rgba(251,191,36,0.08) !important;
+                }
+
+          # ── Active Lights Counter ──
+          - type: markdown
+            content: >-
+              {% set on_lights = expand(
+                  'light.1','light.2','light.3','light.4',
+                  'light.tub','light.shower',
+                  'light.fan_1','light.fan_2',
+                  'light.office_shelf_strip'
+                ) | selectattr('state','eq','on') | list | count %}
+              {% set total = 9 %}
+              <div style="text-align:center; padding: 18px 16px;">
+                <div style="
+                  font-size: 42px;
+                  font-weight: 900;
+                  background: linear-gradient(135deg,
+                    {% if on_lights > 0 %}#fbbf24, #f59e0b{% else %}#6b7280, #4b5563{% endif %}
+                  );
+                  -webkit-background-clip: text;
+                  -webkit-text-fill-color: transparent;
+                  line-height: 1.1;
+                ">{{ on_lights }}<span style="font-size: 18px; font-weight: 600; -webkit-text-fill-color: rgba(255,255,255,0.3);">/{{ total }}</span></div>
+                <div style="
+                  font-size: 11px;
+                  text-transform: uppercase;
+                  letter-spacing: 2px;
+                  color: rgba(255,255,255,0.35);
+                  font-weight: 600;
+                  margin-top: 4px;
+                ">Lights Active</div>
+                <div style="
+                  margin: 12px auto 0;
+                  width: 80%;
+                  height: 4px;
+                  border-radius: 4px;
+                  background: rgba(255,255,255,0.06);
+                  overflow: hidden;
+                "><div style="
+                  height: 100%;
+                  width: {{ (on_lights / total * 100) | round }}%;
+                  border-radius: 4px;
+                  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+                  transition: width 0.6s ease;
+                  box-shadow: 0 0 8px rgba(251,191,36,0.4);
+                "></div></div>
+              </div>
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(255,255,255,0.03) !important;
+                  border: 1px solid rgba(255,255,255,0.06) !important;
+                  border-radius: 20px !important;
+                  backdrop-filter: blur(16px) !important;
+                  box-shadow: 0 4px 24px rgba(0,0,0,0.2) !important;
+                }
+
+      # ════════════════════════════════════════════════════════════════════
+      # MASTER BATHROOM
+      # Warm amber accent (vanity fixture + shower & tub)
+      # ════════════════════════════════════════════════════════════════════
+      - type: grid
+        title: "\U0001F6C1  Master Bathroom"
+        cards:
+          - type: heading
+            heading: Vanity Fixture
+            heading_style: subtitle
+
+          - type: tile
+            entity: light.1
+            name: Vanity 1
+            icon: mdi:vanity-light
+            features:
+              - type: light-brightness
+            card_mod:
+              style: |
+                ha-card {
+                  {% if is_state('light.1', 'on') %}
+                    background: rgba(251,191,36,0.08) !important;
+                    border: 1px solid rgba(251,191,36,0.2) !important;
+                    box-shadow: 0 0 20px rgba(251,191,36,0.1), 0 4px 16px rgba(0,0,0,0.2) !important;
+                  {% else %}
+                    background: rgba(255,255,255,0.03) !important;
+                    border: 1px solid rgba(255,255,255,0.06) !important;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+                  {% endif %}
+                  border-radius: 16px !important;
+                  backdrop-filter: blur(12px) !important;
+                  transition: all 0.4s ease !important;
+                }
+
+          - type: tile
+            entity: light.2
+            name: Vanity 2
+            icon: mdi:vanity-light
+            features:
+              - type: light-brightness
+            card_mod:
+              style: |
+                ha-card {
+                  {% if is_state('light.2', 'on') %}
+                    background: rgba(251,191,36,0.08) !important;
+                    border: 1px solid rgba(251,191,36,0.2) !important;
+                    box-shadow: 0 0 20px rgba(251,191,36,0.1), 0 4px 16px rgba(0,0,0,0.2) !important;
+                  {% else %}
+                    background: rgba(255,255,255,0.03) !important;
+                    border: 1px solid rgba(255,255,255,0.06) !important;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+                  {% endif %}
+                  border-radius: 16px !important;
+                  backdrop-filter: blur(12px) !important;
+                  transition: all 0.4s ease !important;
+                }
+
+          - type: tile
+            entity: light.3
+            name: Vanity 3
+            icon: mdi:vanity-light
+            features:
+              - type: light-brightness
+            card_mod:
+              style: |
+                ha-card {
+                  {% if is_state('light.3', 'on') %}
+                    background: rgba(251,191,36,0.08) !important;
+                    border: 1px solid rgba(251,191,36,0.2) !important;
+                    box-shadow: 0 0 20px rgba(251,191,36,0.1), 0 4px 16px rgba(0,0,0,0.2) !important;
+                  {% else %}
+                    background: rgba(255,255,255,0.03) !important;
+                    border: 1px solid rgba(255,255,255,0.06) !important;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+                  {% endif %}
+                  border-radius: 16px !important;
+                  backdrop-filter: blur(12px) !important;
+                  transition: all 0.4s ease !important;
+                }
+
+          - type: tile
+            entity: light.4
+            name: Vanity 4
+            icon: mdi:vanity-light
+            features:
+              - type: light-brightness
+            card_mod:
+              style: |
+                ha-card {
+                  {% if is_state('light.4', 'on') %}
+                    background: rgba(251,191,36,0.08) !important;
+                    border: 1px solid rgba(251,191,36,0.2) !important;
+                    box-shadow: 0 0 20px rgba(251,191,36,0.1), 0 4px 16px rgba(0,0,0,0.2) !important;
+                  {% else %}
+                    background: rgba(255,255,255,0.03) !important;
+                    border: 1px solid rgba(255,255,255,0.06) !important;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+                  {% endif %}
+                  border-radius: 16px !important;
+                  backdrop-filter: blur(12px) !important;
+                  transition: all 0.4s ease !important;
+                }
+
+          - type: heading
+            heading: Shower & Tub
+            heading_style: subtitle
+
+          - type: tile
+            entity: light.tub
+            name: Tub Light
+            icon: mdi:bathtub-outline
+            features:
+              - type: light-brightness
+            card_mod:
+              style: |
+                ha-card {
+                  {% if is_state('light.tub', 'on') %}
+                    background: rgba(56,189,248,0.08) !important;
+                    border: 1px solid rgba(56,189,248,0.2) !important;
+                    box-shadow: 0 0 20px rgba(56,189,248,0.1), 0 4px 16px rgba(0,0,0,0.2) !important;
+                  {% else %}
+                    background: rgba(255,255,255,0.03) !important;
+                    border: 1px solid rgba(255,255,255,0.06) !important;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+                  {% endif %}
+                  border-radius: 16px !important;
+                  backdrop-filter: blur(12px) !important;
+                  transition: all 0.4s ease !important;
+                }
+
+          - type: tile
+            entity: light.shower
+            name: Shower Light
+            icon: mdi:shower-head
+            features:
+              - type: light-brightness
+            card_mod:
+              style: |
+                ha-card {
+                  {% if is_state('light.shower', 'on') %}
+                    background: rgba(56,189,248,0.08) !important;
+                    border: 1px solid rgba(56,189,248,0.2) !important;
+                    box-shadow: 0 0 20px rgba(56,189,248,0.1), 0 4px 16px rgba(0,0,0,0.2) !important;
+                  {% else %}
+                    background: rgba(255,255,255,0.03) !important;
+                    border: 1px solid rgba(255,255,255,0.06) !important;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+                  {% endif %}
+                  border-radius: 16px !important;
+                  backdrop-filter: blur(12px) !important;
+                  transition: all 0.4s ease !important;
+                }
+
+      # ════════════════════════════════════════════════════════════════════
+      # MASTER BEDROOM
+      # Cool indigo accent (ceiling fan lights)
+      # ════════════════════════════════════════════════════════════════════
+      - type: grid
+        title: "\U0001F6CF  Master Bedroom"
+        cards:
+          - type: heading
+            heading: Ceiling Fan
+            heading_style: subtitle
+
+          - type: tile
+            entity: light.fan_1
+            name: Fan Light 1
+            icon: mdi:ceiling-fan-light
+            features:
+              - type: light-brightness
+            card_mod:
+              style: |
+                ha-card {
+                  {% if is_state('light.fan_1', 'on') %}
+                    background: rgba(129,140,248,0.08) !important;
+                    border: 1px solid rgba(129,140,248,0.2) !important;
+                    box-shadow: 0 0 20px rgba(129,140,248,0.1), 0 4px 16px rgba(0,0,0,0.2) !important;
+                  {% else %}
+                    background: rgba(255,255,255,0.03) !important;
+                    border: 1px solid rgba(255,255,255,0.06) !important;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+                  {% endif %}
+                  border-radius: 16px !important;
+                  backdrop-filter: blur(12px) !important;
+                  transition: all 0.4s ease !important;
+                }
+
+          - type: tile
+            entity: light.fan_2
+            name: Fan Light 2
+            icon: mdi:ceiling-fan-light
+            features:
+              - type: light-brightness
+            card_mod:
+              style: |
+                ha-card {
+                  {% if is_state('light.fan_2', 'on') %}
+                    background: rgba(129,140,248,0.08) !important;
+                    border: 1px solid rgba(129,140,248,0.2) !important;
+                    box-shadow: 0 0 20px rgba(129,140,248,0.1), 0 4px 16px rgba(0,0,0,0.2) !important;
+                  {% else %}
+                    background: rgba(255,255,255,0.03) !important;
+                    border: 1px solid rgba(255,255,255,0.06) !important;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+                  {% endif %}
+                  border-radius: 16px !important;
+                  backdrop-filter: blur(12px) !important;
+                  transition: all 0.4s ease !important;
+                }
+
+      # ════════════════════════════════════════════════════════════════════
+      # OFFICE
+      # Purple accent (LED strip + music mode)
+      # ════════════════════════════════════════════════════════════════════
+      - type: grid
+        title: "\U0001F4BB  Office"
+        cards:
+          - type: heading
+            heading: Accent Lighting
+            heading_style: subtitle
+
+          - type: tile
+            entity: light.office_shelf_strip
+            name: Shelf LED Strip
+            icon: mdi:led-strip-variant
+            features:
+              - type: light-brightness
+            card_mod:
+              style: |
+                ha-card {
+                  {% if is_state('light.office_shelf_strip', 'on') %}
+                    background: rgba(168,85,247,0.08) !important;
+                    border: 1px solid rgba(168,85,247,0.2) !important;
+                    box-shadow: 0 0 20px rgba(168,85,247,0.1), 0 4px 16px rgba(0,0,0,0.2) !important;
+                  {% else %}
+                    background: rgba(255,255,255,0.03) !important;
+                    border: 1px solid rgba(255,255,255,0.06) !important;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+                  {% endif %}
+                  border-radius: 16px !important;
+                  backdrop-filter: blur(12px) !important;
+                  transition: all 0.4s ease !important;
+                }
+
+          - type: tile
+            entity: switch.office_shelf_strip_music_mode_for_effects
+            name: Music Sync Mode
+            icon: mdi:music-note-bluetooth
+            card_mod:
+              style: |
+                ha-card {
+                  {% if is_state('switch.office_shelf_strip_music_mode_for_effects', 'on') %}
+                    background: rgba(236,72,153,0.08) !important;
+                    border: 1px solid rgba(236,72,153,0.2) !important;
+                    box-shadow: 0 0 20px rgba(236,72,153,0.1), 0 4px 16px rgba(0,0,0,0.2) !important;
+                  {% else %}
+                    background: rgba(255,255,255,0.03) !important;
+                    border: 1px solid rgba(255,255,255,0.06) !important;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+                  {% endif %}
+                  border-radius: 16px !important;
+                  backdrop-filter: blur(12px) !important;
+                  transition: all 0.4s ease !important;
+                }

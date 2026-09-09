@@ -1,0 +1,43 @@
+celestial:
+  card-mod-theme: celestial
+  card-mod-view: |
+    hui-sections-view {
+      {% set elev = state_attr('sun.sun', 'elevation') | float(0) %}
+      {% set azi = state_attr('sun.sun', 'azimuth') | float(180) %}
+      {% set rising = azi < 180 %}
+      {% set sun_x = ((azi / 3.6) | round(0)) %}
+
+      {% set moon = "radial-gradient(circle at 82% 14%, #ffffff 0px, #fef9c3 4px, rgba(254,249,195,0.8) 10px, rgba(199,210,254,0.25) 26px, transparent 48px)" %}
+      {% set nebula = "radial-gradient(ellipse at 40% 25%, rgba(139,92,246,0.18) 0%, transparent 55%), radial-gradient(ellipse at 75% 65%, rgba(56,189,248,0.12) 0%, transparent 50%)" %}
+      {% set twilight_stars = "radial-gradient(circle at 75% 22%, #ffffff 0px, rgba(254,240,138,0.9) 2px, transparent 8px), radial-gradient(circle at 25% 16%, #ffffff 0px, rgba(165,180,252,0.8) 2px, transparent 7px), radial-gradient(circle at 58% 12%, #ffffff 0px, transparent 3px)" %}
+      {% set deep_stars = "radial-gradient(circle at 18% 26%, rgba(255,255,255,0.95) 0px, rgba(56,189,248,0.5) 2px, transparent 6px), radial-gradient(circle at 48% 12%, rgba(255,255,255,0.9) 0px, transparent 3px), radial-gradient(circle at 72% 20%, rgba(254,240,138,0.95) 0px, transparent 3px), radial-gradient(circle at 88% 42%, rgba(251,146,60,0.85) 0px, transparent 4px), radial-gradient(circle at 28% 55%, rgba(255,255,255,0.85) 0px, transparent 3px), radial-gradient(circle at 62% 38%, rgba(255,255,255,0.9) 0px, transparent 3px)" %}
+
+      {% if elev > 20 %}
+      /* High Noon / Full Daylight */
+      background: radial-gradient(circle at {{ sun_x }}% 10%, rgba(250,204,21,0.3) 0%, transparent 35%), linear-gradient(180deg, #0369a1 0%, #0284c7 15%, #0ea5e9 35%, #38bdf8 55%, #0c4a6e 85%, #0f172a 100%) !important;
+      {% elif elev > 5 and rising %}
+      /* Morning Golden Hour */
+      background: radial-gradient(circle at 20% 25%, rgba(251,191,36,0.35) 0%, transparent 40%), linear-gradient(180deg, #1e3a5f 0%, #075985 15%, #0ea5e9 40%, #fbbf24 70%, #f59e0b 85%, #92400e 100%) !important;
+      {% elif elev > 5 and not rising %}
+      /* Afternoon Golden Hour */
+      background: radial-gradient(circle at 80% 25%, rgba(249,115,22,0.4) 0%, transparent 40%), linear-gradient(180deg, #1e3a5f 0%, #075985 15%, #0ea5e9 35%, #f97316 65%, #ea580c 80%, #7c2d12 100%) !important;
+      {% elif elev > -2 and rising %}
+      /* Sunrise / Dawn */
+      background: radial-gradient(circle at 15% 60%, rgba(251,191,36,0.55) 0%, rgba(251,146,60,0.25) 25%, transparent 50%), linear-gradient(180deg, #1e1b4b 0%, #312e81 12%, #4c1d95 25%, #7c3aed 38%, #db2777 50%, #f97316 65%, #fbbf24 78%, #fef3c7 90%, #fef9c3 100%) !important;
+      {% elif elev > -2 and not rising %}
+      /* Sunset / Dusk */
+      background: radial-gradient(circle at 85% 55%, rgba(239,68,68,0.45) 0%, rgba(234,88,12,0.25) 25%, transparent 50%), linear-gradient(180deg, #0f172a 0%, #1e1b4b 10%, #4c1d95 22%, #7e22ce 35%, #be185d 48%, #dc2626 58%, #ea580c 68%, #f97316 78%, #fb923c 88%, #fed7aa 100%) !important;
+      {% elif elev > -6 and rising %}
+      /* Early Dawn / Nautical Twilight */
+      background: {{ twilight_stars }}, radial-gradient(circle at 20% 85%, rgba(99,102,241,0.3) 0%, transparent 45%), linear-gradient(180deg, #020617 0%, #0f172a 20%, #1e1b4b 40%, #312e81 60%, #4338ca 75%, #6366f1 88%, #818cf8 100%) !important;
+      {% elif elev > -6 and not rising %}
+      /* Late Dusk / Nautical Twilight */
+      background: {{ twilight_stars }}, radial-gradient(circle at 80% 85%, rgba(168,85,247,0.3) 0%, transparent 45%), linear-gradient(180deg, #020617 0%, #0f172a 18%, #1e1b4b 35%, #581c87 55%, #7e22ce 70%, #a855f7 85%, #c084fc 100%) !important;
+      {% else %}
+      /* Deep Night / Cosmic Starfield & Moon */
+      background: {{ moon }}, {{ nebula }}, {{ deep_stars }}, radial-gradient(ellipse at 50% 0%, #1e1b4b 0%, #0f172a 35%, #050814 65%, #020617 100%) !important;
+      {% endif %}
+      background-attachment: scroll !important;
+      background-size: cover !important;
+      min-height: 100vh;
+    }
