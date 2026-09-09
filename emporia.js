@@ -2,7 +2,7 @@ require("./env");
 const { EmporiaVue, Scale } = require('emporia-vue-lib');
 
 const vue = new EmporiaVue();
-const POLL_INTERVAL = 1000; // 1 second live interval
+const POLL_INTERVAL = Number(process.env.POLL_INTERVAL_MS) || 1000;
 
 async function pollOnce(deviceGids, devices) {
   try {
@@ -12,7 +12,7 @@ async function pollOnce(deviceGids, devices) {
 
     console.clear();
     console.log(`==================================================`);
-    console.log(`      EMPORIA LIVE 1-SEC TELEMETRY (${timestamp}) `);
+    console.log(`      EMPORIA LIVE TELEMETRY (${timestamp}) `);
     console.log(`==================================================`);
 
     for (const [gid, deviceUsage] of Object.entries(usageDict)) {
@@ -38,7 +38,7 @@ async function pollOnce(deviceGids, devices) {
       }
     }
     console.log(`==================================================`);
-    console.log(`[Live 1s stream | Ctrl+C to Stop]`);
+    console.log(`[Live stream (${POLL_INTERVAL / 1000}s) | Ctrl+C to Stop]`);
 
   } catch (err) {
     console.log(`\n[!] Error fetching usage: ${err.message}`);
@@ -63,7 +63,7 @@ async function startMonitor() {
     }
     const deviceGids = devices.map(d => d.deviceGid);
 
-    // 3. Start Sequential 1-second Polling Loop
+    // 3. Start Sequential Polling Loop
     while (true) {
       await pollOnce(deviceGids, devices);
       await new Promise(res => setTimeout(res, POLL_INTERVAL));

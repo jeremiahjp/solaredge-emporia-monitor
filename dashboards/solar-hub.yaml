@@ -812,6 +812,8 @@ views:
             heading: 24-Hour Energy Timeline
             icon: mdi:chart-timeline-variant-shimmer
           - type: custom:apexcharts-card
+            experimental:
+              disable_config_validation: true
             header:
               show: true
               title: 24-Hour Power Profile
@@ -820,53 +822,85 @@ views:
             graph_span: 24h
             span:
               end: minute
+            update_interval: 2m
             all_series_config:
-              stroke_width: 2.5
-              opacity: 0.25
-              type: area
+              curve: smooth
+              group_by:
+                func: avg
+                duration: 5m
             apex_config:
               chart:
-                height: 310px
+                height: 330px
                 zoom:
-                  enabled: true
+                  enabled: false
                 toolbar:
                   show: false
               grid:
-                borderColor: rgba(255, 255, 255, 0.06)
+                borderColor: rgba(255, 255, 255, 0.08)
+                strokeDashArray: 3
               legend:
                 show: true
                 position: top
                 horizontalAlign: right
+                labels:
+                  colors: '#cbd5e1'
+              tooltip:
+                shared: true
+                intersect: false
+                theme: dark
               stroke:
-                show: true
                 curve: smooth
-                width:
-                  - 2.5
-                  - 2.5
-                  - 1.5
-              fill:
-                type: gradient
-                gradient:
-                  shadeIntensity: 1
-                  opacityFrom: 0.35
-                  opacityTo: 0.02
-                  stops: [0, 90, 100]
+            yaxis:
+              - id: power
+                min: 0
+                decimals: 0
+                apex_config:
+                  title:
+                    text: Solar & House (W)
+                    style:
+                      color: '#94a3b8'
+                      fontSize: '11px'
+                      fontWeight: 500
+                  labels:
+                    style:
+                      colors: '#94a3b8'
+                      fontSize: '11px'
+              - id: grid
+                opposite: true
+                decimals: 0
+                apex_config:
+                  title:
+                    text: Grid Net (W)
+                    style:
+                      color: '#d946ef'
+                      fontSize: '11px'
+                      fontWeight: 500
+                  labels:
+                    style:
+                      colors: '#d946ef'
+                      fontSize: '11px'
             series:
               - entity: sensor.home_solar_energy_monitor_solar_production
                 name: Solar Generation
+                yaxis_id: power
                 color: '#ffb300'
                 type: area
+                opacity: 0.28
+                stroke_width: 2.8
                 fill_raw: last
               - entity: sensor.home_solar_energy_monitor_house_consumption
                 name: House Consumed
+                yaxis_id: power
                 color: '#00e5ff'
                 type: line
+                stroke_width: 2.8
                 fill_raw: last
               - entity: sensor.home_solar_energy_monitor_grid_net_power
                 name: Grid Net (+Import / -Export)
-                color: '#e040fb'
+                yaxis_id: grid
+                color: '#d946ef'
                 type: line
-                stroke_width: 1.5
+                stroke_width: 1.8
                 fill_raw: last
             card_mod:
               style: |

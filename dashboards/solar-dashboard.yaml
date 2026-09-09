@@ -308,6 +308,8 @@ views:
             heading: 24h Production vs Consumption
             icon: mdi:chart-bell-curve-cumulative
           - type: custom:apexcharts-card
+            experimental:
+              disable_config_validation: true
             header:
               show: true
               title: Power Timeline (Solar vs House vs Grid)
@@ -318,59 +320,83 @@ views:
               end: minute
             update_interval: 2m
             all_series_config:
-              stroke_width: 2.5
               curve: smooth
               group_by:
                 func: avg
                 duration: 5m
             apex_config:
               chart:
-                height: 290
+                height: 310
                 zoom:
                   enabled: false
                 toolbar:
                   show: false
-              stroke:
-                show: true
-                curve: smooth
-                width:
-                  - 2.5
-                  - 2.5
-                  - 1.5
-              fill:
-                type: gradient
-                gradient:
-                  type: vertical
-                  shadeIntensity: 0.5
-                  opacityFrom: 0.45
-                  opacityTo: 0.05
-                  stops:
-                    - 0
-                    - 95
               grid:
-                borderColor: rgba(128, 128, 128, 0.15)
+                borderColor: rgba(255, 255, 255, 0.08)
                 strokeDashArray: 3
               legend:
                 show: true
                 position: top
                 horizontalAlign: right
+                labels:
+                  colors: '#cbd5e1'
+              tooltip:
+                shared: true
+                intersect: false
+                theme: dark
+              stroke:
+                curve: smooth
+            yaxis:
+              - id: power
+                min: 0
+                decimals: 0
+                apex_config:
+                  title:
+                    text: Solar & House (W)
+                    style:
+                      color: '#94a3b8'
+                      fontSize: '11px'
+                      fontWeight: 500
+                  labels:
+                    style:
+                      colors: '#94a3b8'
+                      fontSize: '11px'
+              - id: grid
+                opposite: true
+                decimals: 0
+                apex_config:
+                  title:
+                    text: Grid Net (W)
+                    style:
+                      color: '#d946ef'
+                      fontSize: '11px'
+                      fontWeight: 500
+                  labels:
+                    style:
+                      colors: '#d946ef'
+                      fontSize: '11px'
             series:
               - entity: sensor.home_solar_energy_monitor_solar_production
                 name: Solar Generated
+                yaxis_id: power
                 color: '#ffb300'
                 type: area
-                opacity: 0.35
+                opacity: 0.28
+                stroke_width: 2.8
                 fill_raw: last
               - entity: sensor.home_solar_energy_monitor_house_consumption
                 name: House Consumed
+                yaxis_id: power
                 color: '#00e5ff'
                 type: line
+                stroke_width: 2.8
                 fill_raw: last
               - entity: sensor.home_solar_energy_monitor_grid_net_power
                 name: Grid Net (+Import / -Export)
-                color: '#e040fb'
+                yaxis_id: grid
+                color: '#d946ef'
                 type: line
-                stroke_width: 1.5
+                stroke_width: 1.8
                 fill_raw: last
 
       # ACTIVE REAL-TIME CIRCUITS
