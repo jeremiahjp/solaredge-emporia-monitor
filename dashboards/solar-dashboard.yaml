@@ -236,15 +236,15 @@ views:
       - type: grid
         cards:
           - type: heading
-            heading: System & Inverter Performance
+            heading: Inverter Performance
             icon: mdi:gauge
           - type: grid
-            columns: 3
+            columns: 2
             square: false
             cards:
               - type: gauge
                 entity: sensor.home_solar_energy_monitor_solar_production
-                name: Solar Generation
+                name: Solar AC Output
                 needle: true
                 min: 0
                 max: 7840
@@ -254,7 +254,7 @@ views:
                   red: 0
               - type: gauge
                 entity: sensor.home_solar_energy_monitor_self_powered_ratio
-                name: Self-Powered %
+                name: Self-Powered
                 needle: true
                 min: 0
                 max: 100
@@ -262,16 +262,9 @@ views:
                   red: 0
                   yellow: 40
                   green: 75
-              - type: gauge
-                entity: sensor.home_solar_energy_monitor_inverter_temperature
-                name: Inverter Temp
-                needle: true
-                min: 60
-                max: 200
-                severity:
-                  green: 60
-                  yellow: 155
-                  red: 175
+          - type: heading
+            heading: Energy & Telemetry Ledger
+            icon: mdi:lightning-bolt-outline
           - type: grid
             columns: 2
             square: false
@@ -283,10 +276,34 @@ views:
                 color: orange
                 vertical: false
               - type: tile
-                entity: sensor.home_solar_energy_monitor_solar_lifetime_production
-                name: Lifetime Solar
-                icon: mdi:counter
-                color: deep-purple
+                entity: sensor.home_solar_energy_monitor_inverter_temperature
+                name: Inverter Temp
+                icon: mdi:thermometer-check
+                color: red
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_solar_produced_today
+                name: Solar Today
+                icon: mdi:solar-power-variant
+                color: amber
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_house_consumed_today
+                name: House Today
+                icon: mdi:home-lightning-bolt
+                color: light-blue
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_grid_exported_today
+                name: Grid Export Today
+                icon: mdi:transmission-tower-export
+                color: teal
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_grid_imported_today
+                name: Grid Import Today
+                icon: mdi:transmission-tower
+                color: indigo
                 vertical: false
               - type: tile
                 entity: sensor.home_solar_energy_monitor_net_energy_cost_today
@@ -295,10 +312,10 @@ views:
                 color: green
                 vertical: false
               - type: tile
-                entity: sensor.home_solar_energy_monitor_grid_net_power
-                name: Grid Net Power
-                icon: mdi:transmission-tower
-                color: purple
+                entity: sensor.home_solar_energy_monitor_solar_lifetime_production
+                name: Lifetime Harvest
+                icon: mdi:medal-outline
+                color: deep-purple
                 vertical: false
       # 24H POWER TIMELINE
       - type: grid
