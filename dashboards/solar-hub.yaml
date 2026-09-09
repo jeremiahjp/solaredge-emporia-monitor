@@ -300,6 +300,18 @@ views:
                 icon: mdi:counter
                 color: deep-purple
                 vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_net_energy_cost_today
+                name: Net Cost Today
+                icon: mdi:cash-check
+                color: green
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_grid_net_power
+                name: Grid Net Power
+                icon: mdi:transmission-tower
+                color: purple
+                vertical: false
     footer:
       card:
         type: custom:dashboard-footer-card
@@ -373,7 +385,6 @@ views:
       # SECTION 1: GOOGLE NEST HVAC STATUS & LOAD ESTIMATOR
       # ------------------------------------------------------------------------
       - type: grid
-        column_span: 2
         cards:
           - type: heading
             heading: Google Nest HVAC Monitor & Dynamic Load Estimator
@@ -455,7 +466,6 @@ views:
       # SECTION 2: ACTIVE REAL-TIME CONSUMERS (> 0 W)
       # ------------------------------------------------------------------------
       - type: grid
-        column_span: 2
         cards:
           - type: heading
             heading: Active Real-Time Loads (> 0 W)
@@ -1024,13 +1034,12 @@ views:
       # SECTION 5: DAILY TOTALS & FINANCIAL BALANCE
       # ------------------------------------------------------------------------
       - type: grid
-        column_span: 2
         cards:
           - type: heading
             heading: Daily Totals & Financial Balance
             icon: mdi:cash-multiple
           - type: grid
-            columns: 3
+            columns: 2
             square: false
             cards:
               - type: tile
@@ -1074,13 +1083,12 @@ views:
       # SECTION 6: SYSTEM INDEPENDENCE & LIFETIME IMPACT
       # ------------------------------------------------------------------------
       - type: grid
-        column_span: 2
         cards:
           - type: heading
             heading: Independence & Lifetime Environmental Impact
             icon: mdi:earth
           - type: grid
-            columns: 3
+            columns: 2
             square: false
             cards:
               - type: tile
@@ -1196,7 +1204,6 @@ views:
       # SECTION 1: SOLAR PIPELINE & DAEMON HEALTH
       # ------------------------------------------------------------------------
       - type: grid
-        column_span: 2
         cards:
           - type: heading
             heading: Solar Pipeline & Daemon Health
@@ -1234,7 +1241,6 @@ views:
       # SECTION 2: HYPER-V VM HOST & SYSTEM RESOURCE DIAGNOSTICS
       # ------------------------------------------------------------------------
       - type: grid
-        column_span: 2
         cards:
           - type: heading
             heading: Hyper-V VM Host & Resource Diagnostics
@@ -1299,7 +1305,6 @@ views:
       # SECTION 3: SOLAREDGE INVERTER HARDWARE TELEMETRY
       # ------------------------------------------------------------------------
       - type: grid
-        column_span: 2
         cards:
           - type: heading
             heading: SolarEdge Inverter Hardware Diagnostics

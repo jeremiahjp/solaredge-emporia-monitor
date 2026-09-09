@@ -35,6 +35,7 @@ views:
       # HERO HEADER
       # ════════════════════════════════════════════════════════════════════
       - type: grid
+        column_span: 3
         cards:
           - type: markdown
             content: >-

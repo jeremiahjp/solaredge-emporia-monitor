@@ -179,6 +179,7 @@ views:
               columns: full
         column_span: 3
       - type: grid
+        column_span: 2
         cards:
           - type: custom:power-flow-card-plus
             title: Live Energy Distribution
@@ -287,38 +288,21 @@ views:
                 icon: mdi:counter
                 color: deep-purple
                 vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_net_energy_cost_today
+                name: Net Cost Today
+                icon: mdi:cash-check
+                color: green
+                vertical: false
+              - type: tile
+                entity: sensor.home_solar_energy_monitor_grid_net_power
+                name: Grid Net Power
+                icon: mdi:transmission-tower
+                color: purple
+                vertical: false
+      # 24H POWER TIMELINE
       - type: grid
-        cards:
-          - type: heading
-            heading: Active Circuits (Highest Load First)
-            icon: mdi:chart-timeline-variant
-          - type: custom:auto-entities
-            card:
-              type: grid
-              columns: 2
-              square: false
-            card_param: cards
-            filter:
-              include:
-                - entity_id: sensor.home_solar_energy_monitor_circuit_*
-                  options:
-                    type: tile
-                    color: amber
-                    vertical: false
-                - entity_id: sensor.fridge_circuit_circuit_fridge
-                  options:
-                    type: tile
-                    name: Refrigerator
-                    icon: mdi:fridge-outline
-                    color: amber
-                    vertical: false
-              exclude:
-                - state: < 0
-            sort:
-              method: state
-              reverse: true
-              numeric: true
-      - type: grid
+        column_span: 3
         cards:
           - type: heading
             heading: 24h Production vs Consumption
@@ -341,7 +325,7 @@ views:
                 duration: 5m
             apex_config:
               chart:
-                height: 270
+                height: 290
                 zoom:
                   enabled: false
                 toolbar:
@@ -388,6 +372,42 @@ views:
                 type: line
                 stroke_width: 1.5
                 fill_raw: last
+
+      # ACTIVE REAL-TIME CIRCUITS
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Active Circuits (Highest Load First)
+            icon: mdi:chart-timeline-variant
+          - type: custom:auto-entities
+            card:
+              type: grid
+              columns: 3
+              square: false
+            card_param: cards
+            filter:
+              include:
+                - entity_id: sensor.home_solar_energy_monitor_circuit_*
+                  options:
+                    type: tile
+                    color: amber
+                    vertical: false
+                - entity_id: sensor.fridge_circuit_circuit_fridge
+                  options:
+                    type: tile
+                    name: Refrigerator
+                    icon: mdi:fridge-outline
+                    color: amber
+                    vertical: false
+              exclude:
+                - state: < 0
+            sort:
+              method: state
+              reverse: true
+              numeric: true
+
+      # DAILY TOTALS & FINANCIAL BALANCE
       - type: grid
         cards:
           - type: heading
